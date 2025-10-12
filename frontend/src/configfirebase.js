@@ -5,7 +5,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyC-bJC9RDwsfv6LIr3f1HSuwluHEYihmkY",
   authDomain: "llm-based-chat-app.firebaseapp.com",
   projectId: "llm-based-chat-app",
-  storageBucket: "llm-based-chat-app.firebasestorage.app",
+  storageBucket: "llm-based-chat-app.appspot.com",
   messagingSenderId: "924450351679",
   appId: "1:924450351679:web:6a8490742a63178807268a"
 };

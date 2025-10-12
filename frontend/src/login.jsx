@@ -1,7 +1,7 @@
 import react from "react";
 import { useState } from "react";
-import userAuthstore from "./state_management/authStore";
-import { auth, provider, signInWithPopup } from './src/configfirebase.js'
+import userAuthstore from "../state_management/authStore.js";
+import { auth, provider, signInWithPopup } from './configfirebase.js'
 function Login() {
 
 
@@ -17,7 +17,7 @@ function Login() {
             await loginwithgoogle({ username: firebaseuser.displayName, email: firebaseuser.email, googleId: firebaseuser.uid });
         }
         catch (err) {
-
+console.error(err);
         }
     }
 

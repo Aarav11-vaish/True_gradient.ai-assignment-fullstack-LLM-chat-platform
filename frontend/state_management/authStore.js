@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import {axiosInstance} from './axios.js';
+import {axiosInstance} from '../axios.js';
 
 
 const userAuthstore = create((set) => ({
