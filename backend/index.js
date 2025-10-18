@@ -6,7 +6,9 @@ import dotenv from 'dotenv';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 import User from './models/userSchema.js';
+import ChatStore from './models/chatstoreschema.js';
 import OpenAI from 'openai';
+import chatsore from '../frontend/state_management/chatstore.js';
 dotenv.config();
 const app = express();
 const server = http.createServer(app);
@@ -27,13 +29,15 @@ mongoose.connect(process.env.MONGO_URI).then(() => {
 // const openai = new OpenAI({
 //     apiKey: process.env.OPEN_AI_KEY,
 // })
+
+
 const genAI = new GoogleGenerativeAI(
     process.env.GEMINI_API_KEY
 );
 app.post('/chat/messages', async (req, res) => {
     try {
         const { message } = req.body;
-const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
         // const response = await openai.chat.completions.create({
         //     model : 'gpt-4o-mini', 
         //     messages : [{role: 'user', content: message}]
@@ -41,16 +45,33 @@ const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
         const result = await model.generateContent(message);
         console.log(result);
         const reply = result.response.text();
-
-
+        console.log(result.response.text());
+const docs = ChatStore.create({
+            messages: [
+                { role: 'user', content: message },
+                { role: 'assistant', content: reply }
+            ]
+        }); 
+        // ChatStore.save();
         // const reply = response.choices[0].message.content;
-        res.json({ reply })
+        res.json({ reply , chat : docs });
     }
     catch (e) {
         console.error("Error generating chat response:", e);
         res.status(500).json({ error: 'Failed to generate chat response' });
     }
 })
+
+app.get('/chat/messages', async (req, res) => {
+  try {
+    const chats = await ChatStore.find().sort({ createdAt: -1 });
+    res.json(chats);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch chat messages" });
+  }
+});
+
+
 
 
 app.get("/", (req, res) => {

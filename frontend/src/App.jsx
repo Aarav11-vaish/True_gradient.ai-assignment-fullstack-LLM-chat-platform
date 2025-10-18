@@ -4,15 +4,16 @@ import viteLogo from '/vite.svg'
 import './App.css'
 import Login from './login.jsx'
 import Home from './components/Home.jsx'
+import Input_button from './components/Input_button.jsx'
 function App() {
   const [count, setCount] = useState(0)
 
   return (
     <>
       <div>
-        <h1 className='bg-slate-600 text-xs'>hwllo</h1>
         <Home/>
-        <Login/>
+<Input_button/>
+        {/* <Login/> */}
       </div>
     </>
   )
