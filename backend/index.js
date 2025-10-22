@@ -8,7 +8,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import User from './models/userSchema.js';
 import ChatStore from './models/chatstoreschema.js';
 import OpenAI from 'openai';
-import chatsore from '../frontend/state_management/chatstore.js';
+import chatsore, { chatstore } from '../frontend/state_management/chatstore.js';
 dotenv.config();
 const app = express();
 const server = http.createServer(app);
@@ -46,15 +46,18 @@ app.post('/chat/messages', async (req, res) => {
         console.log(result);
         const reply = result.response.text();
         console.log(result.response.text());
-const docs = ChatStore.create({
-            messages: [
-                { role: 'user', content: message },
-                { role: 'assistant', content: reply }
-            ]
-        }); 
-        // ChatStore.save();
-        // const reply = response.choices[0].message.content;
-        res.json({ reply , chat : docs });
+        let chat = await ChatStore.findOne();
+        if (!chat) {
+            chat = new ChatStore({
+                messages: []
+            });
+        }
+         
+        chat.messages.push({ role: 'user', content: message },
+            { role: 'assistant', content: reply });
+        await chat.save();
+        res.json({ reply });
+
     }
     catch (e) {
         console.error("Error generating chat response:", e);
@@ -63,12 +66,18 @@ const docs = ChatStore.create({
 })
 
 app.get('/chat/messages', async (req, res) => {
-  try {
-    const chats = await ChatStore.find().sort({ createdAt: -1 });
-    res.json(chats);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to fetch chat messages" });
-  }
+    try {
+       const chat = await ChatStore.findOne();
+         if (!chat) {
+          return res.json([]);
+         }
+         res.json(chat.messages);
+
+        //   const chats = await ChatStore.find().sort({ createdAt: -1 });
+        // res.json(chats);
+    } catch (error) {
+        res.status(500).json({ error: "Failed to fetch chat messages" });
+    }
 });
 
 
