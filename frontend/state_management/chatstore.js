@@ -5,16 +5,18 @@ import { axiosInstance } from '../axios.js';
 export const chatstore = create((set, get) => ({
   messageinput: '',
   chatlist: [],
+  loader: false,
   setmessageinput: (input) => set({ messageinput: input }),
 
   // Send message to backend
   sendMessage: async () => {
     const { messageinput } = get();
     if (!messageinput.trim()) return;
-
+set({loader: true});
     try {
       const res = await axiosInstance.post('/chat/messages', {
         message: messageinput,
+
       });
 
       const { reply } = res.data;
@@ -29,6 +31,10 @@ export const chatstore = create((set, get) => ({
       }));
     } catch (err) {
       console.error('Error sending message:', err);
+    }
+    finally{
+      set({loader: false});
+      // loader: false;
     }
   },
 
