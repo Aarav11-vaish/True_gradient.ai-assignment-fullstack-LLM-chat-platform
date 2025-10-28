@@ -12,7 +12,11 @@ function App() {
     <>
       <div>
         <Home/>
-<Input_button/>
+        <div>
+
+< 
+  Input_button/>
+        </div>
         {/* <Login/> */}
       </div>
     </>

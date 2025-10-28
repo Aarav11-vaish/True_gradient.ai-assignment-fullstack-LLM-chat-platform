@@ -5,7 +5,7 @@ import Input_button from "./Input_button";
 import chatstore from "../../state_management/chatstore.js";
 
 function Home() {
-  const { chatlist, fetchMessages, loader } = chatstore();
+  const { chatlist, fetchMessages, loader , isloggedin} = chatstore();
 
   useEffect(() => {
     fetchMessages();
@@ -15,11 +15,12 @@ function Home() {
     <div>
       <Navbar />
       <div className="flex h-screen">
-        {/* Sidebar */}
-        <div className="w-1/5 bg-gray-800 text-white">
+        {isloggedin ? (
+<div>
+
+ <div className="w-1/6 bg-gray-900 text-white">
           <Sidebar />
         </div>
-
         {/* Chat content */}
         <div className="flex-1 bg-gray-100 p-4 space-y-3 overflow-y-auto">
           {loader ? (
@@ -43,6 +44,16 @@ function Home() {
             ))
           )}
         </div>
+        </div>
+        ):(
+          <div className="flex-1 flex justify-center items-center">
+            <h2 className="text-2xl font-semibold">Please login to continue</h2>
+          </div>
+
+          
+        )}
+        {/* Sidebar */}
+       
       </div>
     </div>
   );

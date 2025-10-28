@@ -8,7 +8,6 @@ const handlesubmit = (e)=>{
 }
     return (
 
-
 <form>   
     <label for="search" class="mb-3 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
     <div class="relative">
