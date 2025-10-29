@@ -5,22 +5,27 @@ import './App.css'
 import Login from './login.jsx'
 import Home from './components/Home.jsx'
 import Input_button from './components/Input_button.jsx'
-function App() {
-  const [count, setCount] = useState(0)
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+  function App() {
+    const [count, setCount] = useState(0)
 
-  return (
-    <>
-      <div>
-        <Home/>
-        <div>
+    return (
+      <Router>
+        <Routes>
 
-< 
-  Input_button/>
-        </div>
-        {/* <Login/> */}
-      </div>
-    </>
-  )
-}
+          
+            <Route path="/login" element={<Login />} />
+            <Route path="/" element={
+              <>
+                <Home />
+              </>
+            } />
+
+          
+
+        </Routes>
+      </Router>
+    )
+  }
 
 export default App

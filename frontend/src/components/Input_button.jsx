@@ -1,29 +1,89 @@
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import chatstore from "../../state_management/chatstore.js";
+
 function Input_button() {
-const {messageinput, setmessageinput , sendMessage} = chatstore();
-const handlesubmit = (e)=>{
+  const { messageinput, setmessageinput, sendMessage } = chatstore();
+  const textareaRef = useRef(null);
+
+  const handlesubmit = (e) => {
     e.preventDefault();
     sendMessage();
-}
-    return (
+  };
 
-<form>   
-    <label for="search" class="mb-3 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
-    <div class="relative">
-        <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-            <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
-            </svg>
-        </div>
-        <input  type="search" value = {messageinput} 
-        onChange={(e)=>{
-            setmessageinput(e.target.value);
-        }}
-        id="search" class="w-full p-4 ps-10 text-l text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search" required />
-        <button  onClick={handlesubmit} type="submit" class="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
+  // Auto-resize textarea as user types
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
+    }
+  }, [messageinput]);
+
+  // Handle Enter key (send) and Shift+Enter (new line)
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handlesubmit(e);
+    }
+  };
+
+  return (
+    <div className="border-t border-gray-200 bg-white">
+      {/* Centered container matching chat width */}
+      <div className="max-w-3xl mx-auto px-4 py-4">
+        <form onSubmit={handlesubmit}>
+          <div className="relative flex items-end gap-2">
+            {/* Textarea Input - expands with content */}
+            <div className="flex-1 relative">
+              <textarea
+                ref={textareaRef}
+                value={messageinput}
+                onChange={(e) => setmessageinput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                rows="1"
+                className="w-full px-4 py-3 pr-12 text-base text-gray-900 bg-white 
+                           border border-gray-300 rounded-2xl resize-none
+                           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                           placeholder:text-gray-400 max-h-40 overflow-y-auto"
+                placeholder="Type your message..."
+                required
+              />
+            </div>
+
+            {/* Send Button - circular with icon */}
+            <button
+              type="submit"
+              disabled={!messageinput.trim()}
+              className="flex-shrink-0 w-10 h-10 flex items-center justify-center
+                         bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 
+                         disabled:cursor-not-allowed rounded-full transition-colors
+                         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              aria-label="Send message"
+            >
+              {/* Send Icon (arrow up) */}
+              <svg
+                className="w-5 h-5 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 10l7-7m0 0l7 7m-7-7v18"
+                />
+              </svg>
+            </button>
+          </div>
+
+          {/* Helper text */}
+          <p className="text-xs text-gray-500 mt-2 px-1">
+            Press Enter to send, Shift+Enter for new line
+          </p>
+        </form>
+      </div>
     </div>
-</form>
-    )
+  );
 }
+
 export default Input_button;

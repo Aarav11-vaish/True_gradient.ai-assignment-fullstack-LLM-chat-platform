@@ -2,9 +2,10 @@ import react from "react";
 import { useState } from "react";
 import userAuthstore from "../state_management/authStore.js";
 import { auth, provider, signInWithPopup } from './configfirebase.js'
+import { useNavigate } from "react-router-dom";
 function Login() {
 
-
+const navigate = useNavigate();
     const { user, loading, error, loginwithgoogle } = userAuthstore();
 
     const handlesubmit = async () => {
@@ -15,6 +16,7 @@ function Login() {
             console.log(firebaseuser);
 
             await loginwithgoogle({ username: firebaseuser.displayName, email: firebaseuser.email, googleId: firebaseuser.uid });
+        navigate('/');
         }
         catch (err) {
             console.error(err);
