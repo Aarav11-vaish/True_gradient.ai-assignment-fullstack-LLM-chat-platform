@@ -12,7 +12,7 @@ export const chatstore = create((set, get) => ({
   sendMessage: async () => {
     const { messageinput } = get();
     if (!messageinput.trim()) return;
-set({loader: true});
+    set({ loader: true });
     try {
       const res = await axiosInstance.post('/chat/messages', {
         message: messageinput,
@@ -32,8 +32,8 @@ set({loader: true});
     } catch (err) {
       console.error('Error sending message:', err);
     }
-    finally{
-      set({loader: false});
+    finally {
+      set({ loader: false });
       // loader: false;
     }
   },

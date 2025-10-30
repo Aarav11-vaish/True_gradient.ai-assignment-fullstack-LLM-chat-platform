@@ -6,26 +6,26 @@ import Login from './login.jsx'
 import Home from './components/Home.jsx'
 import Input_button from './components/Input_button.jsx'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-  function App() {
-    const [count, setCount] = useState(0)
+function App() {
+  const [count, setCount] = useState(0)
 
-    return (
-      <Router>
-        <Routes>
+  return (
+    <Router>
+      <Routes>
 
-          
-            <Route path="/login" element={<Login />} />
-            <Route path="/" element={
-              <>
-                <Home />
-              </>
-            } />
 
-          
+        <Route path="/login" element={<Login />} />
+        <Route path="/" element={
+          <>
+            <Home />
+          </>
+        } />
 
-        </Routes>
-      </Router>
-    )
-  }
+
+
+      </Routes>
+    </Router>
+  )
+}
 
 export default App

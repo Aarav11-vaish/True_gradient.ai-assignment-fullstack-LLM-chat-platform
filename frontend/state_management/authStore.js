@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import {axiosInstance} from '../axios.js';
+import { axiosInstance } from '../axios.js';
 
 
 const userAuthstore = create((set) => ({
@@ -7,28 +7,29 @@ const userAuthstore = create((set) => ({
     loading: false,
     loader: false,
     error: null,
-isloggedin : false,
+    isloggedin: false,
 
     loginwithgoogle: async (userData) => {
+
 
         set({ loading: true, error: null });
 
         try {
             const res = await axiosInstance.post('/google-signin', userData);
             set({
-      user: res.data,
-      loading: false,
-      isloggedin: true,
-      error: null,
-    });
+                user: res.data,
+                loading: false,
+                isloggedin: true,
+                error: null,
+            });
         }
         catch (error) {
             console.log(error);
             set({ loading: false, error: null });
         }
-    }, 
-    logout: ()=>{
-        set({user:null})
+    },
+    logout: () => {
+        set({ user: null })
     },
 
 
