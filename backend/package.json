@@ -19,6 +19,7 @@
     "env": "^0.0.2",
     "express": "^5.1.0",
     "firebase": "^12.4.0",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.19.1",
     "openai": "^6.4.0"
   }

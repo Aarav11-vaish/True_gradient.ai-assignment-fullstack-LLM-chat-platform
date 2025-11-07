@@ -4,6 +4,8 @@ import mongoose from 'mongoose';
 import http from 'http';
 import dotenv from 'dotenv';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { JsonWebTokenError } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 
 import User from './models/userSchema.js';
 import ChatStore from './models/chatstoreschema.js';
@@ -87,13 +89,20 @@ app.post('/google-signin', async (req, res) => {
     const { username, email, googleId } = req.body;
     try {
         const user = await User.findOne({ email });
+         const token = jwt.sign({
+                id: newUser._id,
+                email: newUser.email
+            }, process.env.JWT_SECRET, { expiresIn: '1h'
+
+            })
         if (user) {
-            res.status(200).json(user);
+            res.status(200).json({user, token});
         }
         else {
             const newUser = new User({ username: username, email, googleId });
             await newUser.save();
-            res.status(201).json(newUser);
+           
+            res.status(201).json({newUser, token});
         }
     }
     catch (err) {
