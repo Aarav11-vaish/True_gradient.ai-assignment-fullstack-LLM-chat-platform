@@ -18,6 +18,7 @@ export const chatstore = create((set, get) => ({
         message: messageinput,
 
       });
+console.log(res.data);
 
       const { reply } = res.data;
 
