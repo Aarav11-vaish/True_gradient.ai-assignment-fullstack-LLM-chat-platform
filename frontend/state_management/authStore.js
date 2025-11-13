@@ -28,6 +28,7 @@ const userAuthstore = create((set) => ({
             set({ loading: false, error: null });
         }
     },
+    
     logout: () => {
         set({ user: null })
     },

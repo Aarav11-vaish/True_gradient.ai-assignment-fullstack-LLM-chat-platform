@@ -136,9 +136,13 @@ app.post('/google-signin', async (req, res) => {
             expiresIn: '1h'
 
         })
-        res.status(200).json({user , token });
-
-       
+        res.cookie('jwt', token, {
+            httpOnly: true,
+            secure: false, // Set to true if using HTTPS
+            sameSite: 'lax',
+            maxAge: 3600000 // 1 hour
+        })
+        res.status(200).json({user , token }); 
     }
     catch (err) {
         console.log(err);

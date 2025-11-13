@@ -20,16 +20,12 @@ export const chatstore = create((set, get) => ({
       });
 console.log(res.data);
 
-      const { reply } = res.data;
+      const { reply , messages} = res.data;
 
-      set((state) => ({
-        chatlist: [
-          ...state.chatlist,
-          { role: 'user', content: messageinput },
-          { role: 'assistant', content: reply },
-        ],
+      set({
+        chatlist: messages,
         messageinput: '',
-      }));
+      });
     } catch (err) {
       console.error('Error sending message:', err);
     }

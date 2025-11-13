@@ -71,11 +71,6 @@ function Home() {
                   )}
                 </div>
               </div>
-
-              {/* Input area - you can add Input_button here if needed */}
-              {/* <div className="border-t border-gray-200 p-4">
-                <Input_button />
-              </div> */}
 <Input_button/>
             </div>
           </>
