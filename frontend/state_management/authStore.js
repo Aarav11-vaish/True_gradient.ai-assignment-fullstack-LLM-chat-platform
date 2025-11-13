@@ -28,7 +28,20 @@ const userAuthstore = create((set) => ({
             set({ loading: false, error: null });
         }
     },
-    
+    checkAuth : async ()=>{
+     try{
+const res = await axiosInstance.get('/checkAuth');
+ set({
+      user: res.data.user,
+      isloggedin: true,
+      loading: false,
+    });
+     }
+     catch(err){
+            console.log(err);
+set({user :NULL , isloggedin : false});
+     }
+    },
     logout: () => {
         set({ user: null })
     },

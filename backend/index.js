@@ -114,6 +114,10 @@ app.get("/", (req, res) => {
     res.send("Hello World");
 })
 
+app.get('/checkAuth', protectroute , async (req, res) => {
+    const user = await User.findById(req.user.id).select('-password');
+  res.json({ user });
+})
 
 app.post('/google-signin', async (req, res) => {
     const { username, email, googleId } = req.body;
@@ -149,7 +153,10 @@ app.post('/google-signin', async (req, res) => {
         res.status(500).json({ message: "Internal Server Error" });
     }
 })
-
+app.post('/logout', (req , res)=>{
+    res.clearCookie('jwt');
+    res.status(200).json({ message: "Logged out successfully" });
+})
 server.listen(3000, (() => {
     console.log("Server started on port 3000");
 }))
