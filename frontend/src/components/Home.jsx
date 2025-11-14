@@ -29,12 +29,10 @@ function Home() {
               {/* Chat Messages Container - centered with max width like Claude */}
               <div className="flex-1 overflow-y-auto">
                 <div className="max-w-3xl mx-auto px-4 py-8">
-                  {loader ? (
-                    // Loader - centered in viewport
-                    <div className="flex justify-center items-center h-96">
-                      <div className="w-8 h-8 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
-                    </div>
-                  ) : chatlist.length === 0 ? (
+              
+
+                   
+              { chatlist.length === 0 ? (
                     // Empty state - when no messages
                     <div className="flex justify-center items-center h-96">
                       <p className="text-gray-400 text-lg">Start a conversation...</p>
@@ -63,10 +61,19 @@ function Home() {
                             {/* Message content */}
                             <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">
                               {chat.content}
+
                             </p>
                           </div>
                         </div>
                       ))}
+                      {loader ?(
+// Loader - centered in viewport
+// need a small loader like spinner in gpt 
+              <div className="flex justify-center items-center h-6">
+                <div className="w-8 h-8 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
+              </div>
+                      ): null}
+
                     </div>
                   )}
                 </div>
