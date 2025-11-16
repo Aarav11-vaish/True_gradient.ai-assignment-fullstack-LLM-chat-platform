@@ -27,11 +27,19 @@ function Home() {
                 <div className="max-w-3xl mx-auto px-4 py-8">
                   
                   {chatlist.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center h-full">
                     <div className="flex justify-center items-center h-96">
                       <p className="text-gray-400 text-lg">
                         Start a conversation...
                       </p>
+                      </div>
+                       {loader && (
+                        <div className="flex justify-center items-center h-6">
+                          <div className="w-8 h-8 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
+                        </div>
+                      )}
                     </div>
+                    
                   ) : (
                     <div className="space-y-1">
                       {chatlist.map((chat, i) => (
