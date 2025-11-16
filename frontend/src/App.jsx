@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useEffect } from 'react'
 import { Navigate } from 'react-router-dom';
 import userAuthstore from '../state_management/authStore.js'
+import Home_page from './components/Home_page.jsx';
 function App() {
   const { isloggedin, checkAuth, loading } = userAuthstore();
 
@@ -25,7 +26,7 @@ function App() {
       <Routes>
         <Route
           path="/"
-          element={isloggedin ? <Home /> : <Navigate to="/login" />}
+          element={isloggedin ? <Home /> : <Home_page/>}
         />
         <Route
           path="/login"

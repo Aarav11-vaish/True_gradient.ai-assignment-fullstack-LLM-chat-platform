@@ -25,44 +25,47 @@ app.use(express.json());
 
 mongoose.connect(process.env.MONGO_URI).then(() => {
     console.log("Connected to MongoDB");
-    
+
 }).catch((err) => {
     console.log("Error connecting to MongoDB", err);
 })
 // const openai = new OpenAI({
-    //     apiKey: process.env.OPEN_AI_KEY,
-    // })
-    const protectroute = async (req, res, next) => {
-    
-        try {
-            const token = req.cookies.jwt;
-            if (!token) {
-                return res.status(401).json({ error: "Unauthorized" });
-            }
-            const decoded = jwt.verify(token, process.env.JWT_SECRET);
-            console.log("Decoded Token:", decoded);
-            //what will this decoded have?
-            // The decoded variable will contain the payload of the JWT token, 
-            // which typically includes the user's ID and any other information that was encoded when the token was created.
-            const user = await User.findById(decoded.id);
-            if (!user) {
-                return res.status(401).json({ error: "Unauthorized" });
-            }
-            req.user = user;
-            next();
-        }
-        catch (err) {
-            console.error(err);
-            res.status(500).json({ error: "Internal server error" });
-        }
-    }
-   
-    
-    const genAI = new GoogleGenerativeAI(
-        process.env.GEMINI_API_KEY
-);
-app.post('/chat/messages', protectroute , async (req, res) => {
+//     apiKey: process.env.OPEN_AI_KEY,
+// })
+const protectroute = async (req, res, next) => {
+
     try {
+        const token = req.cookies.jwt;
+        if (!token) {
+            return res.status(401).json({ error: "Unauthorized" });
+        }
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        console.log("Decoded Token:", decoded);
+        //what will this decoded have?
+        // The decoded variable will contain the payload of the JWT token, 
+        // which typically includes the user's ID and any other information that was encoded when the token was created.
+        const user = await User.findById(decoded.id);
+        if (!user) {
+            return res.status(401).json({ error: "Unauthorized" });
+        }
+        req.user = user;
+        next();
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
+
+
+const genAI = new GoogleGenerativeAI(
+    process.env.GEMINI_API_KEY
+);
+
+
+app.post('/chat/:id/messages', protectroute, async (req, res) => {
+    try {
+        const { id } = req.params;
         const { message } = req.body;
         const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
         // const response = await openai.chat.completions.create({
@@ -73,21 +76,18 @@ app.post('/chat/messages', protectroute , async (req, res) => {
         console.log(result);
         const reply = result.response.text();
         console.log(result.response.text());
-        let chat = await ChatStore.findOne({userId: req.user._id});
+        let chat = await ChatStore.findOne({
+            _id: id,
+            userId: req.user._id
+        });
         //what will this chat have?
         // The chat variable will contain the chat document retrieved from the ChatStore collection in the database. 
         // If no chat document exists, it will be null or undefined.
-        if (!chat) {
-            chat = new ChatStore({
-                userId: req.user._id,
-                messages: []
-            });
-        }
 
         chat.messages.push({ role: 'user', content: message },
             { role: 'assistant', content: reply });
         await chat.save();
-        res.json({ reply, messages : chat.messages });
+        res.json({ reply, messages: chat.messages });
 
     }
     catch (e) {
@@ -96,7 +96,25 @@ app.post('/chat/messages', protectroute , async (req, res) => {
     }
 })
 
-app.get('/chat/messages', protectroute , async (req, res) => {
+app.get('/all-chats', protectroute, async (req, res) => {
+    try {
+        const allChats = await ChatStore.find({ userId: req.user._id }).select('_id title createdAt updatedAt').sort({ updatedAt: -1 });
+        //what will allChats have?
+        // The allChats variable will contain an array of chat documents belonging to the authenticated user.
+        // what is this .select and .sort doing?
+        // The .select('_id title createdAt updatedAt') method is used to specify which fields to include in the returned documents, 
+        // in this case only the _id, title, createdAt, and updatedAt fields. 
+        // The .sort({ updatedAt: -1 }) method sorts the results in descending order based on the updatedAt field, 
+        // so that the most recently updated chats appear first.
+        res.status(200).json(allChats);
+    }
+    catch (e) {
+        console.error(e);
+        res.status(500).json({ error: "Failed to fetch chats" });
+    }
+})
+
+app.get('/chat/messages', protectroute, async (req, res) => {
     try {
         const chat = await ChatStore.findOne({ userId: req.user._id });
         if (!chat) {
@@ -114,9 +132,27 @@ app.get("/", (req, res) => {
     res.send("Hello World");
 })
 
-app.get('/checkAuth', protectroute , async (req, res) => {
+
+app.get('/chat/:id', protectroute, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const chat = await ChatStore.findOne({ _id: id, userId: req.user._id });
+        if (!chat) {
+            return res.status(404).json({ error: "Chat not found" });
+        }
+        res.status(200).json(chat);
+    }
+    catch (e) {
+        console.error(e);
+        res.status(500).json({ error: "Failed to fetch chat" });
+    }
+})
+
+
+
+app.get('/checkAuth', protectroute, async (req, res) => {
     const user = await User.findById(req.user.id).select('-password');
-  res.json({ user });
+    res.json({ user });
 })
 
 app.post('/google-signin', async (req, res) => {
@@ -124,7 +160,7 @@ app.post('/google-signin', async (req, res) => {
     try {
         let user = await User.findOne({ email });
 
-        if(!user){
+        if (!user) {
             user = new User({
                 username,
                 email,
@@ -146,14 +182,39 @@ app.post('/google-signin', async (req, res) => {
             sameSite: 'lax',
             maxAge: 3600000 // 1 hour
         })
-        res.status(200).json({user , token }); 
+        res.status(200).json({ user, token });
     }
     catch (err) {
         console.log(err);
         res.status(500).json({ message: "Internal Server Error" });
     }
 })
-app.post('/logout', (req , res)=>{
+
+app.post('/new-chat', protectroute, async (req, res) => {
+    try {
+        const reqID = req.user._id;
+        const newChat = new ChatStore({
+            userId: reqID,
+            title: "New Chat",
+            messages: []
+        })
+        await newChat.save();
+
+        res.status(200).json({
+            message: "New chat created", chatId: newChat._id
+        })
+    }
+    catch (e) {
+        console.error(e);
+
+        res.status(500).json({ error: "Failed to create new chat" });
+
+    }
+})
+
+
+
+app.post('/logout', (req, res) => {
     res.clearCookie('jwt');
     res.status(200).json({ message: "Logged out successfully" });
 })
