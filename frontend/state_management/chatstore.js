@@ -17,6 +17,12 @@ createnewChat : async () => {
      const { chatId } = res.data;
 
       // Set active chat instantly
+     set({ historyChatList: [
+  { _id: chatId, title: "Untitled Chat" },
+  ...get().historyChatList
+]
+     })
+
       set({ activeChatId: chatId, chatlist: [] });
 
       return chatId;
