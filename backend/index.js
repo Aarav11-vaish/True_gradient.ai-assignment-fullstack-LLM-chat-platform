@@ -114,20 +114,7 @@ app.get('/all-chats', protectroute, async (req, res) => {
     }
 })
 
-app.get('/chat/messages', protectroute, async (req, res) => {
-    try {
-        const chat = await ChatStore.findOne({ userId: req.user._id });
-        if (!chat) {
-            return res.json([]);
-        }
-        res.json(chat.messages);
 
-        //   const chats = await ChatStore.find().sort({ createdAt: -1 });
-        // res.json(chats);
-    } catch (error) {
-        res.status(500).json({ error: "Failed to fetch chat messages" });
-    }
-});
 app.get("/", (req, res) => {
     res.send("Hello World");
 })
